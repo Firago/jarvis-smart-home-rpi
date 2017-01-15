@@ -1,7 +1,7 @@
 package com.dfirago.jsh.rpi.service.impl;
 
 import com.dfirago.jsh.rpi.service.WlanService;
-import com.dfirago.jsh.rpi.shell.ScanNetworksCommand;
+import com.dfirago.jsh.rpi.shell.ScanNetworkCommand;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,6 +15,6 @@ public class WlanServiceImpl implements WlanService {
 
     @Override
     public List<String> scanNetworks() throws IOException, InterruptedException {
-        return ScanNetworksCommand.execute();
+        return ScanNetworkCommand.execute();
     }
 }

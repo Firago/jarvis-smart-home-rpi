@@ -41,7 +41,7 @@ public class AwsLambdaController {
     @ResponseBody
     @RequestMapping(value = "/ping", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> ping() {
-        LOG.debug("Ping request received");
+        LOG.info("Ping request received");
         String date = dateFormat.format(new Date());
         return new ResponseEntity<>(date, HttpStatus.OK);
     }
@@ -49,7 +49,7 @@ public class AwsLambdaController {
     @ResponseBody
     @RequestMapping(value = "/action", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ActionResponse handleActionRequest(@RequestBody ActionRequest actionRequest) throws JsonProcessingException {
-        LOG.debug("Request received: {}", actionRequest);
+        LOG.info("Request received: {}", actionRequest);
         actionLogService.logActionRequest(actionRequest);
         DeviceInfo deviceInfo = deviceInfoService.findByName(actionRequest.getDeviceName());
         DeviceStateChangeRequest deviceStateChangeRequest = new DeviceStateChangeRequest();

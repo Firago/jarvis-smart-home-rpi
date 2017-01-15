@@ -43,7 +43,7 @@ public class MobileController {
     @ResponseBody
     @RequestMapping(value = "/ping", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> ping() {
-        LOG.debug("Ping request received");
+        LOG.info("Ping request received");
         String date = dateFormat.format(new Date());
         return new ResponseEntity<>(date, HttpStatus.OK);
     }
@@ -51,8 +51,9 @@ public class MobileController {
     @ResponseBody
     @RequestMapping(value = "/devices", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public FindAvailableDevicesResponse findAvailableDevices() throws IOException, InterruptedException {
-        LOG.debug("Scan network for available devices request received");
+        LOG.info("Scan network for available devices request received");
         List<String> devices = wlanService.scanNetworks();
+        LOG.info("Number of networks available: {}", devices.size());
         FindAvailableDevicesResponse response = new FindAvailableDevicesResponse();
         response.setDevices(devices);
         return response;
@@ -61,7 +62,7 @@ public class MobileController {
     @ResponseBody
     @RequestMapping(value = "/devices", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public RegisterDeviceResponse registerDevice(@RequestBody RegisterDeviceRequest registerDeviceRequest) {
-        LOG.debug("Register new device request received: {}", registerDeviceRequest);
+        LOG.info("Register new device request received: {}", registerDeviceRequest);
         DeviceInfo deviceInfo = new DeviceInfo();
         // TODO connect to registerDeviceRequest.getSsid() network using Command
         ModuleInfoResponse moduleInfo = moduleService.getModuleInfo();
