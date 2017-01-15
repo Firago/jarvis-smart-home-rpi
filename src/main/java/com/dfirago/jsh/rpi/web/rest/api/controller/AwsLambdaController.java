@@ -29,7 +29,7 @@ public class AwsLambdaController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AwsLambdaController.class);
 
-    private final DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+    private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
     private MoquetteServer moquetteServer;

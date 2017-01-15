@@ -31,7 +31,7 @@ public class MobileController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MobileController.class);
 
-    private final DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
+    private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
     private DeviceInfoService deviceInfoService;
