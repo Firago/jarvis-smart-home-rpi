@@ -11,27 +11,20 @@ import com.dfirago.jsh.rpi.web.rest.client.service.ModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by dmfi on 13/01/2017.
  */
 @RestController
-@RequestMapping("/mobile")
-public class MobileController {
+@RequestMapping("/api/mobile")
+public class MobileController extends AbstractController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MobileController.class);
-
-    private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
     private DeviceInfoService deviceInfoService;
@@ -39,14 +32,6 @@ public class MobileController {
     private ModuleService moduleService;
     @Autowired
     private WlanService wlanService;
-
-    @ResponseBody
-    @RequestMapping(value = "/ping", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> ping() {
-        LOG.info("Ping request received");
-        String date = dateFormat.format(new Date());
-        return new ResponseEntity<>(date, HttpStatus.OK);
-    }
 
     @ResponseBody
     @RequestMapping(value = "/devices", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

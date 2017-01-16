@@ -10,15 +10,15 @@ import java.util.List;
 /**
  * Created by dmfi on 13/01/2017.
  */
-public class ScanNetworkCommand extends AbstractCommand {
+public class NetworkScanCommand extends AbstractCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ScanNetworkCommand.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetworkScanCommand.class);
 
     private static final String SCAN_NETWORKS_COMMAND = "sudo iwlist wlan1 scan";
     private static final String ONLY_SSID = " | grep -oP '(?<=ESSID:\")\\w+(?=\")'";
 
     public static List<String> execute() throws IOException, InterruptedException {
-        LOG.debug("Executing ScanNetworkCommand...");
+        LOG.debug("Executing NetworkScanCommand...");
         String commandResult = executeCommand(SCAN_NETWORKS_COMMAND + ONLY_SSID);
         LOG.debug("Command execution result:\n{}", commandResult);
         String[] networks = commandResult.split("\n");
