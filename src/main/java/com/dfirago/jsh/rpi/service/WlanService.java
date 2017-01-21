@@ -1,6 +1,5 @@
 package com.dfirago.jsh.rpi.service;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -8,5 +7,9 @@ import java.util.List;
  */
 public interface WlanService {
 
-    List<String> scanNetworks() throws IOException, InterruptedException;
+    List<String> scanNetworks(boolean jshOnly);
+
+    boolean connect(String ssid);
+
+    boolean connect(String ssid, String password);
 }

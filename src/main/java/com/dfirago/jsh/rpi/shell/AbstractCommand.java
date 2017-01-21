@@ -1,6 +1,6 @@
 package com.dfirago.jsh.rpi.shell;
 
-import com.dfirago.jsh.rpi.exception.CommandExecutionException;
+import com.google.common.base.Throwables;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,19 +16,23 @@ public abstract class AbstractCommand {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCommand.class);
 
-    public static String executeCommand(String command) throws IOException, InterruptedException {
+    protected static ExecutionResult executeCommand(String command) {
         LOG.debug("Executing command: {}", command);
-        Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", command});
-        int exitCode = process.waitFor();
-        LOG.debug("Exit code: {}", exitCode);
-        if (exitCode == 0) {
-            InputStream processInputStream = process.getInputStream();
-            return IOUtils.toString(processInputStream, StandardCharsets.UTF_8);
-        } else {
-            InputStream processErrorStream = process.getErrorStream();
-            String errorMessage = IOUtils.toString(processErrorStream, StandardCharsets.UTF_8);
-            LOG.error("Error occurred while executing shell command: {}", errorMessage);
-            throw new CommandExecutionException(errorMessage);
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", command});
+            int exitCode = process.waitFor();
+            LOG.debug("Exit code: {}", exitCode);
+            String responseMessage;
+            if (exitCode == 0) {
+                InputStream processInputStream = process.getInputStream();
+                responseMessage = IOUtils.toString(processInputStream, StandardCharsets.UTF_8);
+            } else {
+                InputStream processErrorStream = process.getErrorStream();
+                responseMessage = IOUtils.toString(processErrorStream, StandardCharsets.UTF_8);
+            }
+            return new ExecutionResult(exitCode, responseMessage);
+        } catch (IOException | InterruptedException e) {
+            throw Throwables.propagate(e);
         }
     }
 }

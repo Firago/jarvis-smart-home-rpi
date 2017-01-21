@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by dmfi on 13/01/2017.
  */
@@ -29,5 +31,11 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     public DeviceInfo findByName(String name) {
         LOG.debug("Searching device by name: {}", name);
         return deviceInfoRepository.findByName(name);
+    }
+
+    @Override
+    public List<DeviceInfo> list() {
+        LOG.debug("Listing all devices...");
+        return deviceInfoRepository.findAll();
     }
 }

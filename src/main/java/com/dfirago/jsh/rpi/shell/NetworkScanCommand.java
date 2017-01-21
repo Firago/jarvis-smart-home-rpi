@@ -1,9 +1,9 @@
 package com.dfirago.jsh.rpi.shell;
 
+import com.dfirago.jsh.rpi.exception.CommandExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,12 +17,17 @@ public class NetworkScanCommand extends AbstractCommand {
     private static final String SCAN_NETWORKS_COMMAND = "sudo iwlist wlan1 scan";
     private static final String ONLY_SSID = " | grep -oP '(?<=ESSID:\")\\w+(?=\")'";
 
-    public static List<String> execute() throws IOException, InterruptedException {
+    public static List<String> execute() {
         LOG.debug("Executing NetworkScanCommand...");
-        String commandResult = executeCommand(SCAN_NETWORKS_COMMAND + ONLY_SSID);
-        LOG.debug("Command execution result:\n{}", commandResult);
-        String[] networks = commandResult.split("\n");
-        LOG.debug("Number of networks returned by the command: {}", networks.length);
-        return Arrays.asList(networks);
+        ExecutionResult executionResult = executeCommand(SCAN_NETWORKS_COMMAND + ONLY_SSID);
+        LOG.debug("Command execution result:\n{}", executionResult);
+        if (executionResult.getExitCode() == 0) {
+            String[] networks = executionResult.getMessage().split("\n");
+            LOG.debug("Number of networks returned by the command: {}", networks.length);
+            return Arrays.asList(networks);
+        } else {
+            LOG.error("Error occurred while executing shell command: {}", executionResult.getMessage());
+            throw new CommandExecutionException(executionResult.getMessage());
+        }
     }
 }

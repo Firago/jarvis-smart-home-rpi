@@ -14,4 +14,11 @@ public class ModuleInfoResponse {
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
+
+    @Override
+    public String toString() {
+        return "ModuleInfoResponse{" +
+                "moduleId='" + moduleId + '\'' +
+                '}';
+    }
 }
