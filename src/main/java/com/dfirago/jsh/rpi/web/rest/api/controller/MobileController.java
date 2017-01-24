@@ -2,14 +2,14 @@ package com.dfirago.jsh.rpi.web.rest.api.controller;
 
 import com.dfirago.jsh.rpi.domain.DeviceInfo;
 import com.dfirago.jsh.rpi.service.DeviceInfoService;
-import com.dfirago.jsh.rpi.service.WlanService;
+import com.dfirago.jsh.rpi.service.NetworkService;
 import com.dfirago.jsh.rpi.web.rest.api.model.*;
-import com.dfirago.jsh.rpi.web.rest.client.model.ModuleInfoResponse;
+import com.dfirago.jsh.rpi.web.rest.client.model.DeviceConfigurationChangeRequest;
+import com.dfirago.jsh.rpi.web.rest.client.model.GetModuleInfoResponse;
 import com.dfirago.jsh.rpi.web.rest.client.service.ModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +30,13 @@ public class MobileController extends AbstractController {
     @Autowired
     private ModuleService moduleService;
     @Autowired
-    private WlanService wlanService;
+    private NetworkService networkService;
 
     @ResponseBody
     @RequestMapping(value = "/networks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ScanNetworksResponse scanNetworks() {
         LOG.info("Scan network for available networks request received");
-        List<String> devices = wlanService.scanNetworks(false);
+        List<String> devices = networkService.scanNetworks(false);
         LOG.info("Number of networks available: {}", devices.size());
         ScanNetworksResponse response = new ScanNetworksResponse();
         response.setDevices(devices);
@@ -48,7 +48,7 @@ public class MobileController extends AbstractController {
     public NetworkConnectResponse networkConnect(@RequestBody NetworkConnectRequest request) {
         NetworkConnectResponse response = new NetworkConnectResponse();
         LOG.info("Connect to specified network request received");
-        if (wlanService.connect(request.getSsid(), request.getPassword())) {
+        if (networkService.connect(request.getSsid(), request.getPassword())) {
             LOG.debug("Successfully connected to {}", request.getSsid());
             response.setSuccess(true);
         } else {
@@ -59,10 +59,10 @@ public class MobileController extends AbstractController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/jsh/networks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/networks/jsh", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ScanNetworksResponse findJshNetworks() {
         LOG.info("Scan network for available JSH devices request received");
-        List<String> devices = wlanService.scanNetworks(true);
+        List<String> devices = networkService.scanNetworks(true);
         LOG.info("Number of JSH devices available: {}", devices.size());
         ScanNetworksResponse response = new ScanNetworksResponse();
         response.setDevices(devices);
@@ -71,11 +71,11 @@ public class MobileController extends AbstractController {
 
     @ResponseBody
     @RequestMapping(value = "/devices", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DeviceInfo>> getJshDevices() {
+    public ResponseEntity<List<DeviceInfo>> getDevices() {
         LOG.info("Get registered JSH devices request received");
         List<DeviceInfo> devices = deviceInfoService.list();
         LOG.info("Number of registered devices: {}", devices.size());
-        return new ResponseEntity<>(devices, HttpStatus.OK);
+        return ResponseEntity.ok(devices);
     }
 
     @ResponseBody
@@ -83,9 +83,16 @@ public class MobileController extends AbstractController {
     public RegisterDeviceResponse registerDevice(@RequestBody RegisterDeviceRequest request) {
         LOG.info("Register new JSH device request received: {}", request);
         RegisterDeviceResponse response = new RegisterDeviceResponse();
-        if (wlanService.connect(request.getDeviceSsid())) {
+        String activeConnection = networkService.getActiveConnection();
+        if (networkService.connect(request.getDeviceSsid())) {
             LOG.debug("Connected to {}", request.getDeviceSsid());
-            ModuleInfoResponse moduleInfo = moduleService.getModuleInfo();
+            // TODO send SSID and password
+            DeviceConfigurationChangeRequest deviceConfigurationChangeRequest
+                    = new DeviceConfigurationChangeRequest();
+            deviceConfigurationChangeRequest.setSsid("JSH_HUB1");
+            deviceConfigurationChangeRequest.setPassword("raspberry");
+            moduleService.changeDeviceConfiguration(deviceConfigurationChangeRequest);
+            GetModuleInfoResponse moduleInfo = moduleService.getModuleInfo();
             LOG.debug("Device information retrieved: {}", moduleInfo);
             DeviceInfo deviceInfo = new DeviceInfo();
             deviceInfo.setDeviceId(moduleInfo.getModuleId());
@@ -95,6 +102,7 @@ public class MobileController extends AbstractController {
         } else {
             response.setSuccess(false);
         }
+        networkService.connect(activeConnection);
         return response;
     }
 }

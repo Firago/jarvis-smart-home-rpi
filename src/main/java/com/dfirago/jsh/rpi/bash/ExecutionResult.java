@@ -1,4 +1,4 @@
-package com.dfirago.jsh.rpi.shell;
+package com.dfirago.jsh.rpi.bash;
 
 /**
  * Created by dmfi on 21/01/2017.

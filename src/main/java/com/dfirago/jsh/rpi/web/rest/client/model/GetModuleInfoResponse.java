@@ -3,7 +3,7 @@ package com.dfirago.jsh.rpi.web.rest.client.model;
 /**
  * Created by dmfi on 13/01/2017.
  */
-public class ModuleInfoResponse {
+public class GetModuleInfoResponse {
 
     private String moduleId;
 
@@ -17,7 +17,7 @@ public class ModuleInfoResponse {
 
     @Override
     public String toString() {
-        return "ModuleInfoResponse{" +
+        return "GetModuleInfoResponse{" +
                 "moduleId='" + moduleId + '\'' +
                 '}';
     }

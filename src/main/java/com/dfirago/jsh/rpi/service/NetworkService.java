@@ -5,11 +5,13 @@ import java.util.List;
 /**
  * Created by dmfi on 13/01/2017.
  */
-public interface WlanService {
+public interface NetworkService {
 
     List<String> scanNetworks(boolean jshOnly);
 
     boolean connect(String ssid);
 
     boolean connect(String ssid, String password);
+
+    String getActiveConnection();
 }
