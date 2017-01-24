@@ -39,7 +39,7 @@ public class AwsLambdaController extends AbstractController {
         DeviceStateChangeRequest deviceStateChangeRequest = new DeviceStateChangeRequest();
         deviceStateChangeRequest.setDeviceId(deviceInfo.getDeviceId());
         deviceStateChangeRequest.setAction(actionRequest.getAction());
-        moquetteServer.publish("consumers", actionRequest);
+        moquetteServer.publish("consumers", deviceStateChangeRequest);
         ActionResponse response = new ActionResponse();
         response.setSuccess(true);
         return response;
