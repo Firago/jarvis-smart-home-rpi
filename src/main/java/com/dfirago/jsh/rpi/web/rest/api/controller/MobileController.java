@@ -10,6 +10,7 @@ import com.dfirago.jsh.rpi.web.rest.client.service.ModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -104,5 +105,16 @@ public class MobileController extends AbstractController {
         }
         networkService.connect(activeConnection);
         return response;
+    }
+
+    @RequestMapping(value = "/devices/{name}", method = RequestMethod.DELETE)
+    public ResponseEntity<DeviceInfo> deleteDevice(@PathVariable("name") String name) {
+        DeviceInfo deviceInfo = deviceInfoService.findByName(name);
+        if (deviceInfo == null) {
+            LOG.debug("Unable to delete. DeviceInfo with name '" + name + "' not found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        deviceInfoService.delete(deviceInfo);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

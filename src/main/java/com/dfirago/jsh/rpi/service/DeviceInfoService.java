@@ -14,4 +14,6 @@ public interface DeviceInfoService {
     DeviceInfo findByName(String name);
 
     List<DeviceInfo> list();
+
+    void delete(DeviceInfo deviceInfo);
 }

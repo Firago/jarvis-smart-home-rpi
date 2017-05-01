@@ -38,4 +38,10 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         LOG.debug("Listing all devices...");
         return deviceInfoRepository.findAll();
     }
+
+    @Override
+    public void delete(DeviceInfo deviceInfo) {
+        LOG.debug("Delete: {}", deviceInfo);
+        deviceInfoRepository.delete(deviceInfo);
+    }
 }
