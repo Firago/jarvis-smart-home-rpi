@@ -13,6 +13,8 @@ public interface DeviceInfoService {
 
     DeviceInfo findByName(String name);
 
+    DeviceInfo findBySsid(String ssid);
+
     List<DeviceInfo> list();
 
     void delete(DeviceInfo deviceInfo);

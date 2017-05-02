@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DeviceInfoRepository extends JpaRepository<DeviceInfo, Long> {
 
     DeviceInfo findByName(String name);
+
+    DeviceInfo findBySsid(String ssid);
 }

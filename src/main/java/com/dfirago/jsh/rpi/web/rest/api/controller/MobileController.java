@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by dmfi on 13/01/2017.
@@ -35,11 +36,11 @@ public class MobileController extends AbstractController {
 
     @ResponseBody
     @RequestMapping(value = "/networks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ScanNetworksResponse scanNetworks() {
+    public NetworkListResponse scanNetworks() {
         LOG.info("Scan network for available networks request received");
         List<String> devices = networkService.scanNetworks(false);
         LOG.info("Number of networks available: {}", devices.size());
-        ScanNetworksResponse response = new ScanNetworksResponse();
+        NetworkListResponse response = new NetworkListResponse();
         response.setDevices(devices);
         return response;
     }
@@ -60,28 +61,34 @@ public class MobileController extends AbstractController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/networks/jsh", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ScanNetworksResponse findJshNetworks() {
-        LOG.info("Scan network for available JSH devices request received");
+    @RequestMapping(value = "/modules", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public NetworkListResponse findModules() {
+        LOG.info("Scan network for available modules request received");
         List<String> devices = networkService.scanNetworks(true);
-        LOG.info("Number of JSH devices available: {}", devices.size());
-        ScanNetworksResponse response = new ScanNetworksResponse();
+        LOG.info("Number of modules available: {}", devices.size());
+        NetworkListResponse response = new NetworkListResponse();
         response.setDevices(devices);
         return response;
     }
 
     @ResponseBody
-    @RequestMapping(value = "/devices", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<DeviceInfo>> getDevices() {
+    @RequestMapping(value = "/modules/registered", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public NetworkListResponse getRegisteredModules() {
         LOG.info("Get registered JSH devices request received");
         List<DeviceInfo> devices = deviceInfoService.list();
+        List<String> deviceNames = devices
+                .stream()
+                .map(DeviceInfo::getSsid)
+                .collect(Collectors.toList());
         LOG.info("Number of registered devices: {}", devices.size());
-        return ResponseEntity.ok(devices);
+        NetworkListResponse response = new NetworkListResponse();
+        response.setDevices(deviceNames);
+        return response;
     }
 
     @ResponseBody
-    @RequestMapping(value = "/devices", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public RegisterDeviceResponse registerDevice(@RequestBody RegisterDeviceRequest request) {
+    @RequestMapping(value = "/modules", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public RegisterDeviceResponse registerModule(@RequestBody RegisterDeviceRequest request) {
         LOG.info("Register new JSH device request received: {}", request);
         RegisterDeviceResponse response = new RegisterDeviceResponse();
         String activeConnection = networkService.getActiveConnection();
@@ -96,8 +103,9 @@ public class MobileController extends AbstractController {
             GetModuleInfoResponse moduleInfo = moduleService.getModuleInfo();
             LOG.debug("Device information retrieved: {}", moduleInfo);
             DeviceInfo deviceInfo = new DeviceInfo();
-            deviceInfo.setDeviceId(moduleInfo.getModuleId());
             deviceInfo.setName(request.getDeviceName());
+            deviceInfo.setDeviceId(moduleInfo.getModuleId());
+            deviceInfo.setSsid(request.getDeviceSsid());
             deviceInfoService.registerDevice(deviceInfo);
             response.setSuccess(true);
         } else {
@@ -107,11 +115,11 @@ public class MobileController extends AbstractController {
         return response;
     }
 
-    @RequestMapping(value = "/devices/{name}", method = RequestMethod.DELETE)
-    public ResponseEntity<DeviceInfo> deleteDevice(@PathVariable("name") String name) {
-        DeviceInfo deviceInfo = deviceInfoService.findByName(name);
+    @RequestMapping(value = "/modules/{ssid}", method = RequestMethod.DELETE)
+    public ResponseEntity<DeviceInfo> deleteModule(@PathVariable("ssid") String ssid) {
+        DeviceInfo deviceInfo = deviceInfoService.findBySsid(ssid);
         if (deviceInfo == null) {
-            LOG.debug("Unable to delete. DeviceInfo with name '" + name + "' not found");
+            LOG.debug("Unable to delete. DeviceInfo with SSID '" + ssid + "' not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         deviceInfoService.delete(deviceInfo);

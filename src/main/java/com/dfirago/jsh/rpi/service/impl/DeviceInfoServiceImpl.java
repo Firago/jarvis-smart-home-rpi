@@ -34,6 +34,12 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     }
 
     @Override
+    public DeviceInfo findBySsid(String ssid) {
+        LOG.debug("Searching device by SSID: {}", ssid);
+        return deviceInfoRepository.findBySsid(ssid);
+    }
+
+    @Override
     public List<DeviceInfo> list() {
         LOG.debug("Listing all devices...");
         return deviceInfoRepository.findAll();

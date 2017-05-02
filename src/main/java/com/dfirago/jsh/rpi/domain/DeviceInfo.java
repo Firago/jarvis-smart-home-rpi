@@ -14,6 +14,7 @@ public class DeviceInfo {
     private Long id;
     private String name;
     private String deviceId;
+    private String ssid;
 
     public Long getId() {
         return id;
@@ -39,12 +40,21 @@ public class DeviceInfo {
         this.deviceId = deviceId;
     }
 
+    public String getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
+    }
+
     @Override
     public String toString() {
         return "DeviceInfo{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", deviceId='" + deviceId + '\'' +
+                ", ssid='" + ssid + '\'' +
                 '}';
     }
 }

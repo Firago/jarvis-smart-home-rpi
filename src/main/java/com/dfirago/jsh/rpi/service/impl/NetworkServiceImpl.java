@@ -32,7 +32,7 @@ public class NetworkServiceImpl implements NetworkService {
         ArrayList<String> networks = new ArrayList<>(networkManager.scanNetworks());
         LOG.info("Available networks: {}", networks);
         if (jshOnly) {
-            networks.removeIf(s -> !s.matches(JSH_NETWORK_FORMAT));
+            networks.removeIf(s -> !s.matches(JSH_NETWORK_FORMAT) || s.equals("JSH_HUB1")); // TODO retrieve name from env vars
             LOG.info("Non JSH networks will be skipped. Available JSH devices: {}", networks);
         }
         return networks;
